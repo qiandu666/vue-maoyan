@@ -37,7 +37,7 @@
     position: fixed;
     top: 154px;
     bottom: 48px;
-    overflow: auto;
+    // overflow: auto;
     
   }
   .icon-ziyuan{

@@ -15,11 +15,16 @@
   </ul>
   </template>
   <script>
-    import {moviesApi}  from "@/api/api.js"
+    import {moviesApi,moviesMoreApi}  from "@/api/api.js"
+    import { nextTick } from "vue";
     export default{
       data(){
         return {
-          MoviesList:[]
+          MoviesList:[],
+          count:0,
+          size:6,
+          startnum:12,
+          ids:[]
         }
       },
       mounted(){
@@ -28,8 +33,21 @@
       methods:{
         async getdata(){
             const res=await moviesApi();
-            this.MoviesList=res.result
-            console.log(res);
+            this.MoviesList=res.result;
+            this.count = res.count;
+            this.startIndex = res.result.length;
+            this.ids=res.ids;
+            await nextTick();
+            this.$emit("addbs");
+        },
+       async getMore(){
+          const newIds=this.ids.slice(this.startnum,this.startnum+this.size);
+          const newStr=newIds.join(',');
+          const resmore=await moviesMoreApi({ids:newStr});
+          this.MoviesList.push(...resmore.result);
+          this.startnum+=this.size;
+          await nextTick();
+          this.$emit("refresh",this.count>this.MoviesList.length);
         }
       }
     }
@@ -38,9 +56,7 @@
     .movies{
       margin-top: 20px;
       width: 375px;
-      height: 114px;
       background-color: #fff;
-      
       li{
         display: flex;
         padding: 10px;

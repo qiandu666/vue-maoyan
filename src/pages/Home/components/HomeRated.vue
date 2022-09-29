@@ -1,7 +1,8 @@
 <template>
   <div class="rated">
     <p>最受好评电影</p>
-    <ul class="rated-content">
+    <div class="rated-scroll">
+      <ul class="rated-content">
       <li v-for="item in list">
         <img :src=item.imgUrl alt="">
         <span>{{item.title}}</span>
@@ -9,10 +10,14 @@
         <p class="score" v-else="item.score">{{item.wishNum}}人想看</p>
       </li>
     </ul>
+    </div>
+   
   </div>
 </template>
 <script>
+  import { nextTick } from "vue";
   import {ratedApi} from "@/api/api.js"
+  import BScroll from '@better-scroll/core'
   export default{
     data(){
       return{
@@ -26,6 +31,12 @@
       async getdate(){
         const res=await ratedApi();
         this.list=res.result;
+        await nextTick();
+        new BScroll('.rated-scroll', {
+          scrollX: true,
+          scrollY: false,
+          click: true,
+        })
       },
     }
     
@@ -41,10 +52,12 @@
       font-size: @m-font;
       margin-bottom: 10px;
     }
-    .rated-content{
+    .rated-scroll{
+      overflow: hidden;
+      .rated-content{
       height: 160px;
-      display: flex;
-      overflow: auto;
+      display:inline-flex;
+      // overflow: auto;
       li{
         margin-right: 10px;
         flex-shrink: 0;
@@ -78,5 +91,7 @@
         }
       }
     }
+    }
+    
   }
 </style>
